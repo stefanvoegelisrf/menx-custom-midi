@@ -105,7 +105,7 @@ The issue was, that I had the setting `USB CDC On Boot` on `Disabled`. To receiv
 
 ### No seesaw chip found
 
-When using an ESP32, we can define the I2C pins freely and most likely, they will not be the standard I2C pins. To change this, we can set the pins manually in the Wire library and then pass the pointer of Wire to the Adafruit Seesaw library.
+When using an ESP32, we can define the I2C pins freely and most likely, they will not be the standard I2C pins. To change this, we can set the pins manually in the Wire library and then pass the pointer of Wire to the Adafruit seesaw library.
 
 ```cpp
 #define I2C_SDA 14
@@ -116,6 +116,11 @@ When using an ESP32, we can define the I2C pins freely and most likely, they wil
 Adafruit_seesaw Sliders[2] = {
   Adafruit_seesaw(&Wire1),
   Adafruit_seesaw(&Wire1)
+};
+
+Adafruit_NeoKey_1x4 NeoKeyButtons[KEY_ROWS][KEY_COLUMNS / 4] = {
+  { Adafruit_NeoKey_1x4(BUTTONS1_ADDRESS, &Wire1) },
+  { Adafruit_NeoKey_1x4(BUTTONS2_ADDRESS, &Wire1) },
 };
 
 ...
