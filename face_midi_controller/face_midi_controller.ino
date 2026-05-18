@@ -89,7 +89,6 @@ void setupEncoders() {
     Serial.print(" at address 0x");
     Serial.println(ENCODER_ADDRESSES[i], HEX);
 
-    // Initialize the encoder with its specific address
     if (!RotaryEncoders[i].begin(ENCODER_ADDRESSES[i])) {
       Serial.print("Error: Couldn't find encoder: ");
       Serial.println(ENCODER_NAMES[i]);
@@ -106,7 +105,7 @@ void setupEncoders() {
       while (1) delay(10);
     }
 
-    // Configure the built-in switch (using standard seesaw SS_SWITCH pin)
+    // Configure the built-in switch
     RotaryEncoders[i].pinMode(ROTARY_SWITCH_PIN, INPUT_PULLUP);
 
     // Get starting position
@@ -134,17 +133,7 @@ void setupSliders() {
 
     uint16_t pid;
     uint8_t year, mon, day;
-
     Sliders[i].getProdDatecode(&pid, &year, &mon, &day);
-    Serial.print("Slider found PID: ");
-    Serial.print(pid);
-    Serial.print(" datecode: ");
-    Serial.print(2000 + year);
-    Serial.print("/");
-    Serial.print(mon);
-    Serial.print("/");
-    Serial.println(day);
-
     if (pid != 5295) {
       Serial.println(F("Wrong slider PID"));
       while (1) delay(10);
@@ -155,17 +144,73 @@ void setupSliders() {
 }
 
 void setupKeys() {
-  if (!NeoKeys.begin()) {  // start matrix
+  if (!NeoKeys.begin()) {
     Serial.println("Could not start NeoKeys, check wiring?");
     while (1) delay(10);
   }
 
   Serial.println("NeoKeys started!");
 
-  // activate all keys and set callbacks
   for (int y = 0; y < KEY_ROWS; y++) {
     for (int x = 0; x < KEY_COLUMNS; x++) {
       NeoKeys.registerCallback(x, y, buttonPressed);
+    }
+  }
+}
+
+void checkEncoders() {
+  for (int i = 0; i < ARRAY_SIZE(RotaryEncoders); i++) {
+    // Read current position
+    int32_t newPosition = RotaryEncoders[i].getEncoderPosition();
+
+    Channel midiChannel = (i % 2 == 0) ? Channel_1 : Channel_2;
+
+    if (newPosition != EncoderPositions[i]) {
+      Serial.print(ENCODER_NAMES[i]);
+      Serial.print(" position: ");
+      Serial.println(newPosition);
+      // Note: C cuts off the decimal places in this division, so we get the correct CC number
+      // e.g. Rotary Encoder Eye 1 has i=0 -> i/2=0 -> 0*2=0, Rotary Encoder Eye 2 has i=1 -> i/2=0.5 -> C cuts off decimal -> 0*2=0
+      MIDIAddress ccAddress = MIDIAddress(20 + (i / 2) * 2, midiChannel);
+      int32_t difference = newPosition - EncoderPositions[i];
+      midi.sendCC(ccAddress, difference > 0 ? 1 : 127);
+
+      EncoderPositions[i] = newPosition;
+    }
+
+    // Check if the encoder button is pressed
+    // Note: The switch is active LOW (0 when pressed)
+    bool currentSwitchState = RotaryEncoders[i].digitalRead(ROTARY_SWITCH_PIN);
+    if (currentSwitchState != LastEncoderSwitchStates[i]) {
+      Serial.print(ENCODER_NAMES[i]);
+      Serial.println(" BUTTON PRESSED!");
+      MIDIAddress ccSwitchAddress = MIDIAddress(21 + (i / 2) * 2, midiChannel);
+      MIDIAddress noteAddress = MIDIAddress(36 + (i / 2), midiChannel);
+
+      if (!currentSwitchState) {  // Pressed
+        midi.sendCC(ccSwitchAddress, FIXED_TRIGGER_VELOCITY);
+        midi.sendNoteOn(noteAddress, FIXED_TRIGGER_VELOCITY);
+      } else {
+        midi.sendCC(ccSwitchAddress, 0);
+        midi.sendNoteOff(noteAddress, 0);
+      }
+      LastEncoderSwitchStates[i] = currentSwitchState;
+    }
+  }
+}
+
+void checkSliders() {
+  for (int i = 0; i < ARRAY_SIZE(Sliders); i++) {
+    uint16_t sliderValue = Sliders[i].analogRead(SLIDER_ANALOGIN);
+    if (sliderValue != SliderValues[i]) {
+      Serial.print(SLIDER_NAMES[i]);
+      Serial.print(" position: ");
+      Serial.println(sliderValue);
+      Channel midiChannel = (i == 0) ? Channel_1 : Channel_2;
+      MIDIAddress ccAddress = MIDIAddress(10, midiChannel);
+      uint8_t midiValue = map(sliderValue, 0, 1023, 0, 127);
+      midi.sendCC(ccAddress, midiValue);
+      SliderValues[i] = sliderValue;
     }
   }
 }
@@ -184,44 +229,9 @@ void setup() {
 }
 
 void loop() {
-  // Check all the encoders
-  for (int i = 0; i < ARRAY_SIZE(RotaryEncoders); i++) {
-    // Read current position
-    int32_t newPosition = RotaryEncoders[i].getEncoderPosition();
-
-    // If position changed, print it out
-    if (newPosition != EncoderPositions[i]) {
-      Serial.print(ENCODER_NAMES[i]);
-      Serial.print(" position: ");
-      Serial.println(newPosition);
-      EncoderPositions[i] = newPosition;
-    }
-
-    // Check if the encoder button is pressed
-    // Note: The switch is active LOW (0 when pressed)
-    if (!RotaryEncoders[i].digitalRead(ROTARY_SWITCH_PIN)) {
-      Serial.print(ENCODER_NAMES[i]);
-      Serial.println(" BUTTON PRESSED!");
-      delay(100);  // Simple debounce for testing
-    }
-  }
-
-  for (int i = 0; i < ARRAY_SIZE(Sliders); i++) {
-    uint16_t sliderValue = Sliders[i].analogRead(SLIDER_ANALOGIN);
-    if (sliderValue != SliderValues[i]) {
-      Serial.print(SLIDER_NAMES[i]);
-      Serial.print(" position: ");
-      Serial.println(sliderValue);
-      Channel midiChannel = (i == 0) ? Channel_1 : Channel_2;
-      MIDIAddress midiAddress = MIDIAddress(10, midiChannel);
-      uint8_t midiValue = map(sliderValue, 0, 1023, 0, 127);
-      midi.sendCC(midiAddress, midiValue);
-      SliderValues[i] = sliderValue;
-    }
-  }
-
+  checkEncoders();
+  checkSliders();
   NeoKeys.read();
-
   midi.update();
   // don't overwhelm serial port
   delay(10);
@@ -236,20 +246,20 @@ NeoKey1x4Callback buttonPressed(keyEvent e) {
   uint8_t controlChangeNumber = 26 + (keyIndex - offset);
   uint8_t noteNumber = 40 + (keyIndex - offset);
 
-  MIDIAddress midiAddressCc = MIDIAddress(controlChangeNumber, midiChannel);
-  MIDIAddress midiAddressNote = MIDIAddress(noteNumber, midiChannel);
+  MIDIAddress ccAddress = MIDIAddress(controlChangeNumber, midiChannel);
+  MIDIAddress noteAddress = MIDIAddress(noteNumber, midiChannel);
 
   if (e.bit.EDGE == SEESAW_KEYPAD_EDGE_RISING) {
     Serial.print("Key press ");
     Serial.println(keyIndex);
-    midi.sendNoteOn(midiAddressNote, FIXED_TRIGGER_VELOCITY);
-    midi.sendCC(midiAddressCc, 127);
+    midi.sendNoteOn(noteAddress, FIXED_TRIGGER_VELOCITY);
+    midi.sendCC(ccAddress, FIXED_TRIGGER_VELOCITY);
 
   } else if (e.bit.EDGE == SEESAW_KEYPAD_EDGE_FALLING) {
     Serial.print("Key release ");
     Serial.println(keyIndex);
-    midi.sendNoteOff(midiAddressNote, FIXED_TRIGGER_VELOCITY);
-    midi.sendCC(midiAddressCc, 0);
+    midi.sendNoteOff(noteAddress, 0);
+    midi.sendCC(ccAddress, 0);
   }
 
   return 0;
