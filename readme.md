@@ -17,6 +17,7 @@ In this readme you can find the parts I used in the project, links to the projec
       - [Documentation](#documentation-3)
   - [What is I2C](#what-is-i2c)
     - [I2C and Arduino](#i2c-and-arduino)
+    - [I2C and Adafruit](#i2c-and-adafruit)
   - [Resources](#resources)
 
 ## Project setup
@@ -127,6 +128,16 @@ I2C uses two lines to connect the devices:
 
 ### I2C and Arduino
 
+I2C in Arduino is handled with the [Wire Library](https://docs.arduino.cc/learn/communication/wire/#wire-library).
+
+### I2C and Adafruit
+
+The components that I use are from Adafruit and they have 5 connectors:
+- VIN: Power pin, which can be supplied with 3 - 5 VDC. The components can regulate the voltage.
+- 3Vo: 3.3V output from the voltage regulator
+- GND: Ground
+- SCL: I2C clock
+- SDA: I2C data
 
 ## Resources
 
