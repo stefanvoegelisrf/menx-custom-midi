@@ -2,6 +2,8 @@
 
 This repository contains the code for my custom midi controller. The goal of the project is to make a face-shaped midi controller that is using I2C components and an ESP32. Code is written using Arduino IDE.
 
+In this readme you can find the parts I used in the project, links to the project setup and helpful resources that I used in this project.
+
 - [Custom midi controller](#custom-midi-controller)
   - [Parts used in this project](#parts-used-in-this-project)
     - [Microcontroller - Waveshare ESP32-S3](#microcontroller---waveshare-esp32-s3)
@@ -106,9 +108,11 @@ I use the following I2C addresses:
 
 ## Project setup
 
-- Install Arduino IDE
-- Install ESP32 Boards
-- Install Adafruit Seesaw library
+I have split the project setup into two parts.
+
+[Project setup - Hardware](./project-setup-hardware.md) covers the hardware part of the project: 3D printing the controller case, soldering the parts, soldering the I2C addresses and connecting the components.
+
+[Project setup - Software](./project-setup-software.md) covers the software part of the project: Setting up the development environment and code explanations.
 
 ## What is I2C
 
