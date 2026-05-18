@@ -39,7 +39,14 @@ const char* ENCODER_NAMES[] = {
   "Eye 1", "Eye 2", "Nose 1", "Nose 2", "Ear 1", "Ear 2"
 };
 
-Adafruit_seesaw rotary_encoders[6];
+Adafruit_seesaw rotary_encoders[6] = {
+  Adafruit_seesaw(&Wire1),
+  Adafruit_seesaw(&Wire1),
+  Adafruit_seesaw(&Wire1),
+  Adafruit_seesaw(&Wire1),
+  Adafruit_seesaw(&Wire1),
+  Adafruit_seesaw(&Wire1)
+};
 
 int32_t encoder_positions[] = { 0, 0, 0, 0, 0, 0 };
 
@@ -52,13 +59,16 @@ const char* SLIDER_NAMES[] = {
   "Eye Brow Slider 1", "Eye Brow Slider 2"
 };
 
-Adafruit_seesaw sliders[2];
+Adafruit_seesaw sliders[2] = {
+  Adafruit_seesaw(&Wire1),
+  Adafruit_seesaw(&Wire1)
+};
 
 uint16_t slider_values[] = { 0, 0 };
 
 Adafruit_NeoKey_1x4 neokey_buttons[KEY_ROWS][KEY_COLUMNS / 4] = {
-  { Adafruit_NeoKey_1x4(BUTTONS1_ADDRESS) },
-  { Adafruit_NeoKey_1x4(BUTTONS2_ADDRESS) },
+  { Adafruit_NeoKey_1x4(BUTTONS1_ADDRESS, &Wire1) },
+  { Adafruit_NeoKey_1x4(BUTTONS2_ADDRESS, &Wire1) },
 };
 
 Adafruit_MultiNeoKey1x4 neokeys((Adafruit_NeoKey_1x4*)neokey_buttons, KEY_ROWS, KEY_COLUMNS / 4);
@@ -69,8 +79,6 @@ void setupEncoders() {
     Serial.print(ENCODER_NAMES[i]);
     Serial.print(" at address 0x");
     Serial.println(ENCODER_ADDRESSES[i], HEX);
-
-    rotary_encoders[i] = Adafruit_seesaw(&Wire1);
 
     // Initialize the encoder with its specific address
     if (!rotary_encoders[i].begin(ENCODER_ADDRESSES[i])) {
@@ -110,8 +118,6 @@ void setupSliders() {
     Serial.print(" at address 0x");
     Serial.println(SLIDER_ADDRESSES[i], HEX);
 
-    sliders[i] = Adafruit_seesaw(&Wire1);
-
     if (!sliders[i].begin(SLIDER_ADDRESSES[i])) {
       Serial.println(F("Slider not found!"));
       while (1) delay(10);
@@ -139,7 +145,7 @@ void setupSliders() {
   Serial.println("All sliders started successfully!\n");
 }
 
-void setupButtons() {
+void setupKeys() {
   if (!neokeys.begin()) {  // start matrix
     Serial.println("Could not start NeoKeys, check wiring?");
     while (1) delay(10);
@@ -162,9 +168,9 @@ void setup() {
   // Set ESP32 pins manually, as they are not on the default pins
   Wire1.setPins(I2C_SDA, I2C_SCL);
 
-  setupEncoders();
   setupSliders();
-  setupButtons();
+  setupEncoders();
+  setupKeys();
 }
 
 void loop() {
