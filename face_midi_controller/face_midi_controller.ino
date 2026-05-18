@@ -212,6 +212,10 @@ void loop() {
       Serial.print(SLIDER_NAMES[i]);
       Serial.print(" position: ");
       Serial.println(sliderValue);
+      Channel midiChannel = (i == 0) ? Channel_1 : Channel_2;
+      MIDIAddress midiAddress = MIDIAddress(10, midiChannel);
+      uint8_t midiValue = map(sliderValue, 0, 1023, 0, 127);
+      midi.sendCC(midiAddress, midiValue);
       SliderValues[i] = sliderValue;
     }
   }

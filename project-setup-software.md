@@ -14,6 +14,8 @@ Below is a description of what is required to get the software of this project t
   - [Troubleshooting](#troubleshooting)
     - [No serial messages received](#no-serial-messages-received)
     - [No seesaw chip found](#no-seesaw-chip-found)
+    - [Testing MIDI](#testing-midi)
+    - [Enable MIDI](#enable-midi)
   - [Resources](#resources)
 
 
@@ -131,6 +133,22 @@ void setup() {
   Wire1.setPins(I2C_SDA, I2C_SCL);
 }
 ```
+
+### Testing MIDI
+
+In order to troubleshoot if any and if the correct MIDI messages arrive on the receiving device, we can use a MIDI monitor application, e.g. [snoize.com. - MIDI Monitor](https://www.snoize.com/MIDIMonitor/)
+
+### Enable MIDI
+
+In order for the ESP32 to act as a MIDI device, we need to change some settings in Arduino IDE.
+
+First, we need to set the USB mode to TinyUSB:
+
+![Screenshot of setting USB mode to TinyUSB inside of Arduino IDE](./images/project-setup/usb-mode-tinyusb.png)
+
+Then, to be able to upload new firmware onto the controller, we also need to set the upload mode to TinyUSB:
+
+![Screenshot of setting upload mode to TinyUSB inside of Arduino IDE](./images/project-setup/upload-mode-tinyusb.png)
 
 ## Resources
 
