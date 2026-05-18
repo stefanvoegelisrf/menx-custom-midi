@@ -37,9 +37,11 @@ To install it, go to the library manager and search for `adafruit seesaw` and in
 
 ### Install MIDI Library
 
-This project transmits the values of the components via MIDI over USB.
+This project transmits the values of the components via MIDI over USB and MIDI over BLE. A simple library to achieve this is called [Control-Surface](https://github.com/tttapa/Control-Surface) which also supports ESP32.
 
-TODO: install MIDI library and define MIDI mapping
+To install it, go to the library manager and search for `control surface`and install the library.
+
+![Screenshot for Control Surface library installation inside of Arduino IDE](./images/project-setup/control-surface-installation.png)
 
 ### Install ESP32 Boards
 
@@ -103,7 +105,27 @@ The issue was, that I had the setting `USB CDC On Boot` on `Disabled`. To receiv
 
 ### No seesaw chip found
 
-When using an ESP32, we can define the I2C pins freely and most likely, they will not be the standard I2C pins.
+When using an ESP32, we can define the I2C pins freely and most likely, they will not be the standard I2C pins. To change this, we can set the pins manually in the Wire library and then pass the pointer of Wire to the Adafruit Seesaw library.
+
+```cpp
+#define I2C_SDA 14
+#define I2C_SCL 13
+
+....
+
+Adafruit_seesaw Sliders[2] = {
+  Adafruit_seesaw(&Wire1),
+  Adafruit_seesaw(&Wire1)
+};
+
+...
+
+
+void setup() {
+  // Set ESP32 pins manually, as they are not on the default pins
+  Wire1.setPins(I2C_SDA, I2C_SCL);
+}
+```
 
 ## Resources
 
