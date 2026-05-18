@@ -184,9 +184,6 @@ void checkEncoders() {
     Channel midiChannel = (i % 2 == 0) ? Channel_1 : Channel_2;
 
     if (newPosition != EncoderPositions[i]) {
-      Serial.print(ENCODER_NAMES[i]);
-      Serial.print(" position: ");
-      Serial.println(newPosition);
       // Note: C cuts off the decimal places in this division, so we get the correct CC number
       // e.g. Rotary Encoder Eye 1 has i=0 -> i/2=0 -> 0*2=0, Rotary Encoder Eye 2 has i=1 -> i/2=0.5 -> C cuts off decimal -> 0*2=0
       MIDIAddress ccAddress = MIDIAddress(20 + (i / 2) * 2, midiChannel);
@@ -200,8 +197,6 @@ void checkEncoders() {
     // Note: The switch is active LOW (0 when pressed)
     bool currentSwitchState = RotaryEncoders[i].digitalRead(ROTARY_SWITCH_PIN);
     if (currentSwitchState != LastEncoderSwitchStates[i]) {
-      Serial.print(ENCODER_NAMES[i]);
-      Serial.println(" BUTTON PRESSED!");
       MIDIAddress ccSwitchAddress = MIDIAddress(21 + (i / 2) * 2, midiChannel);
       MIDIAddress noteAddress = MIDIAddress(36 + (i / 2), midiChannel);
 
@@ -221,9 +216,6 @@ void checkSliders() {
   for (int i = 0; i < ARRAY_SIZE(Sliders); i++) {
     uint16_t sliderValue = Sliders[i].analogRead(SLIDER_ANALOGIN);
     if (sliderValue != SliderValues[i]) {
-      Serial.print(SLIDER_NAMES[i]);
-      Serial.print(" position: ");
-      Serial.println(sliderValue);
       Channel midiChannel = (i == 0) ? Channel_1 : Channel_2;
       MIDIAddress ccAddress = MIDIAddress(10, midiChannel);
       uint8_t midiValue = map(sliderValue, 0, 1023, 0, 127);
@@ -235,8 +227,6 @@ void checkSliders() {
 
 void setup() {
   Serial.begin(115200);
-  while (!Serial) delay(10);
-
   // Set ESP32 pins manually, as they are not on the default pins
   Wire1.setPins(I2C_SDA, I2C_SCL);
 
@@ -270,14 +260,10 @@ NeoKey1x4Callback buttonPressed(keyEvent e) {
   MIDIAddress noteAddress = MIDIAddress(noteNumber, midiChannel);
 
   if (e.bit.EDGE == SEESAW_KEYPAD_EDGE_RISING) {
-    Serial.print("Key press ");
-    Serial.println(keyIndex);
     sendNoteOn(noteAddress, FIXED_TRIGGER_VELOCITY);
     sendCc(ccAddress, FIXED_TRIGGER_VELOCITY);
 
   } else if (e.bit.EDGE == SEESAW_KEYPAD_EDGE_FALLING) {
-    Serial.print("Key release ");
-    Serial.println(keyIndex);
     sendNoteOff(noteAddress, 0);
     sendCc(ccAddress, 0);
   }
