@@ -29,6 +29,8 @@ This project makes use of components by Adafruit which are connected via I2C (ST
 
 This ESP32 is used for receiving the signals from the components used, handles controlling the LEDs of the components and sends the midi signals over USB.
 
+Number of components in this project: 1
+
 #### Documentation
 
 - [waveshare.com - ESP32-S3-DEV-KIT-NXRX](https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8)
@@ -42,6 +44,12 @@ This ESP32 is used for receiving the signals from the components used, handles c
 The slide potentiometers are used for representing the eyebrows of the face. I use custom slider caps. The 3D print file for these can be found [here - TODO: add link]().
 
 The possible I2C addresses are: 0x30 - 0x3F (0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F)
+
+Number of components in this project: 2
+
+I use the following I2C addresses:
+- 0x30
+- 0x31
 
 #### Documentation
 
@@ -57,6 +65,16 @@ The possible I2C addresses are: 0x30 - 0x3F (0x30, 0x31, 0x32, 0x33, 0x34, 0x35,
 The rotary encoders are used for representing the eyes, noseholes and earrings of the face. I use custom encoder caps. The 3D print file for these can be found [here - TODO: add link]().
 
 The possible I2C addresses are: 0x36 - 0x3D (0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D)
+
+Number of components in this project: 6
+
+I use the following I2C addresses:
+- 0x36
+- 0x37
+- 0x38
+- 0x39
+- 0x3A
+- 0x3B
 
 #### Documentation
 
@@ -74,6 +92,12 @@ The buttons are used for representing the teeth of the face. I use standard part
 - [adafruit.com - Translucent Keycaps for MX Compatible Switches - 10 pack](https://www.adafruit.com/product/4956)
 
 The possible I2C addresses are: 0x30 - 0x3F (0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F)
+
+Number of components in this project: 2
+
+I use the following I2C addresses:
+- 0x32
+- 0x33
 
 #### Documentation
 
