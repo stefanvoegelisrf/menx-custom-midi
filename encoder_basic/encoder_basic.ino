@@ -1,12 +1,3 @@
-/*
- * This example shows how to read from a seesaw encoder module.
- * The available encoder API is:
- *      int32_t getEncoderPosition();
-        int32_t getEncoderDelta();
-        void enableEncoderInterrupt();
-        void disableEncoderInterrupt();
-        void setEncoderPosition(int32_t pos);
- */
 #include "Adafruit_seesaw.h"
 #include <seesaw_neopixel.h>
 
@@ -16,7 +7,18 @@
 #define SS_SWITCH 24
 #define SS_NEOPIX 6
 
-#define SEESAW_ADDR 0x36
+#define SLIDER1_ADDRESS 0x30
+#define SLIDER2_ADDRESS 0x31
+
+#define ROTARY_EYE1_ADDRESS 0x36
+#define ROTARY_EYE2_ADDRESS 0x37
+#define ROTARY_NOSE1_ADDRESS 0x38
+#define ROTARY_NOSE2_ADDRESS 0x39
+#define ROTARY_EAR1_ADDRESS 0x3A
+#define ROTARY_EAR1_ADDRESS 0x3B
+
+#define BUTTONS1_ADDRESS 0x32
+#define BUTTONS2_ADDRESS 0x33
 
 Adafruit_seesaw ss;
 seesaw_NeoPixel sspixel;
@@ -27,6 +29,7 @@ void setup() {
   Serial.begin(115200);
   while (!Serial) delay(10);
 
+  // Set ESP32 pins manually, as they are not on the default pins
   Wire1.setPins(I2C_SDA, I2C_SCL);
 
   sspixel = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800, &Wire1);
@@ -34,7 +37,7 @@ void setup() {
 
   Serial.println("Looking for seesaw!");
 
-  if (!ss.begin(SEESAW_ADDR) || !sspixel.begin(SEESAW_ADDR)) {
+  if (!ss.begin(ROTARY_EYE1_ADDRESS) || !sspixel.begin(ROTARY_EYE1_ADDRESS)) {
     Serial.println("Couldn't find seesaw on default address");
     while (1) delay(10);
   }
