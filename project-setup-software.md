@@ -150,6 +150,7 @@ Then, to be able to upload new firmware onto the controller, we also need to set
 
 ![Screenshot of setting upload mode to TinyUSB inside of Arduino IDE](./images/project-setup/upload-mode-tinyusb.png)
 
+
 ### How to connect MIDI BLE
 
 In order to connect a MIDI device via BLE, we need to use the `Audio MIDI Setup` application of MacOS and the open the `MIDI Studio` via `Window` -> `Show MIDI Studio`.
@@ -168,3 +169,4 @@ Once we have MIDI Studio open, we can click on the Bluetooth icon to search for 
 - [docs.waveshare.com - ESP32 Arduino IDE Setup](https://docs.waveshare.com/ESP32-Arduino-Tutorials/Arduino-IDE-Setup)
 - [learn.adafruit.com - Arduino MIDI Example](https://learn.adafruit.com/adafruit-midi-featherwing/arduino-midi-example)
 - [learn.adafruit.com - MIDI for Makers](https://learn.adafruit.com/midi-for-makers/overview)
+- [tttapa.github.io - Control Surface Documentation](https://tttapa.github.io/Control-Surface/Doxygen/index.html)
