@@ -1,5 +1,5 @@
 #include "Adafruit_seesaw.h"
-#include <seesaw_neopixel.h>
+#include "Adafruit_NeoKey_1x4.h"
 
 #define I2C_SDA 14
 #define I2C_SCL 13
@@ -20,6 +20,9 @@
 
 #define BUTTONS1_ADDRESS 0x32
 #define BUTTONS2_ADDRESS 0x33
+
+#define KEY_ROWS 2
+#define KEY_COLUMNS 4
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
 
@@ -53,12 +56,12 @@ Adafruit_seesaw sliders[2];
 
 uint16_t slider_values[] = { 0, 0 };
 
-const uint8_t BUTTON_ADDRESSES[] = {
-  BUTTONS1_ADDRESS,
-  BUTTONS2_ADDRESS
+Adafruit_NeoKey_1x4 neokey_buttons[KEY_ROWS][KEY_COLUMNS / 4] = {
+  { Adafruit_NeoKey_1x4(BUTTONS1_ADDRESS) },
+  { Adafruit_NeoKey_1x4(BUTTONS2_ADDRESS) },
 };
 
-Adafruit_seesaw buttons[2];
+Adafruit_MultiNeoKey1x4 neokeys((Adafruit_NeoKey_1x4*)neokey_buttons, KEY_ROWS, KEY_COLUMNS / 4);
 
 void setupEncoders() {
   for (int i = 0; i < ARRAY_SIZE(rotary_encoders); i++) {
@@ -137,8 +140,18 @@ void setupSliders() {
 }
 
 void setupButtons() {
-  for (int i = 0; i < ARRAY_SIZE(buttons); i++) {
-    buttons[i] = Adafruit_seesaw(&Wire1);
+  if (!neokeys.begin()) {  // start matrix
+    Serial.println("Could not start NeoKeys, check wiring?");
+    while (1) delay(10);
+  }
+
+  Serial.println("NeoKeys started!");
+
+  // activate all keys and set callbacks
+  for (int y = 0; y < KEY_ROWS; y++) {
+    for (int x = 0; x < KEY_COLUMNS; x++) {
+      neokeys.registerCallback(x, y, buttonPressed);
+    }
   }
 }
 
@@ -187,6 +200,22 @@ void loop() {
     }
   }
 
+  neokeys.read();
+
   // don't overwhelm serial port
   delay(10);
+}
+
+NeoKey1x4Callback buttonPressed(keyEvent e) {
+  uint8_t key = e.bit.NUM;
+  if (e.bit.EDGE == SEESAW_KEYPAD_EDGE_RISING) {
+    Serial.print("Key press ");
+    Serial.println(key);
+
+  } else if (e.bit.EDGE == SEESAW_KEYPAD_EDGE_FALLING) {
+    Serial.print("Key release ");
+    Serial.println(key);
+  }
+
+  return 0;
 }
