@@ -5,6 +5,7 @@ This repository contains the code for my custom midi controller. The goal of the
 In this readme you can find the parts I used in the project, links to the project setup and helpful resources that I used in this project.
 
 - [Custom midi controller](#custom-midi-controller)
+  - [Project setup](#project-setup)
   - [Parts used in this project](#parts-used-in-this-project)
     - [Microcontroller - Waveshare ESP32-S3](#microcontroller---waveshare-esp32-s3)
       - [Documentation](#documentation)
@@ -14,10 +15,17 @@ In this readme you can find the parts I used in the project, links to the projec
       - [Documentation](#documentation-2)
     - [Buttons - Adafruit NeoKey 1x4](#buttons---adafruit-neokey-1x4)
       - [Documentation](#documentation-3)
-  - [Project setup](#project-setup)
   - [What is I2C](#what-is-i2c)
     - [I2C and Arduino](#i2c-and-arduino)
   - [Resources](#resources)
+
+## Project setup
+
+I have split the project setup into two parts.
+
+[Project setup - Hardware](./project-setup-hardware.md) covers the hardware part of the project: 3D printing the controller case, soldering the parts, soldering the I2C addresses and connecting the components.
+
+[Project setup - Software](./project-setup-software.md) covers the software part of the project: Setting up the development environment and code explanations.
 
 
 ## Parts used in this project
@@ -107,14 +115,6 @@ I use the following I2C addresses:
 - [learn.adafruit.com - NeoKey 1x4 QT I2C](https://learn.adafruit.com/neokey-1x4-qt-i2c)
 - [learn.adafruit.com - NeoKey 1x4 QT I2C Downloads](https://learn.adafruit.com/neokey-1x4-qt-i2c/downloads)
 
-## Project setup
-
-I have split the project setup into two parts.
-
-[Project setup - Hardware](./project-setup-hardware.md) covers the hardware part of the project: 3D printing the controller case, soldering the parts, soldering the I2C addresses and connecting the components.
-
-[Project setup - Software](./project-setup-software.md) covers the software part of the project: Setting up the development environment and code explanations.
-
 ## What is I2C
 
 Inter-integrated circuit (I2C) is a protocol used to connect and transfer data between my main processor (ESP32) and my components (Rotary encoders, sliders and buttons) using simple wiring.
@@ -126,7 +126,6 @@ I2C uses two lines to connect the devices:
 - SCL (Serial Clock): The pulsing signal to keep the devices synchronized
 
 ### I2C and Arduino
-
 
 
 ## Resources

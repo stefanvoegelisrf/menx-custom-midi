@@ -4,8 +4,9 @@
 #define I2C_SDA 14
 #define I2C_SCL 13
 
-#define SS_SWITCH 24
-#define SS_NEOPIX 6
+#define ROTARY_SWITCH_PIN 24
+
+#define SLIDER_ANALOGIN 18
 
 #define SLIDER1_ADDRESS 0x30
 #define SLIDER2_ADDRESS 0x31
@@ -15,15 +16,78 @@
 #define ROTARY_NOSE1_ADDRESS 0x38
 #define ROTARY_NOSE2_ADDRESS 0x39
 #define ROTARY_EAR1_ADDRESS 0x3A
-#define ROTARY_EAR1_ADDRESS 0x3B
+#define ROTARY_EAR2_ADDRESS 0x3B
 
 #define BUTTONS1_ADDRESS 0x32
 #define BUTTONS2_ADDRESS 0x33
 
-Adafruit_seesaw ss;
-seesaw_NeoPixel sspixel;
+const uint8_t ENCODER_ADDRESSES[6] = {
+  ROTARY_EYE1_ADDRESS,
+  ROTARY_EYE2_ADDRESS,
+  ROTARY_NOSE1_ADDRESS,
+  ROTARY_NOSE2_ADDRESS,
+  ROTARY_EAR1_ADDRESS,
+  ROTARY_EAR2_ADDRESS
+};
 
-int32_t encoder_position;
+const char* ENCODER_NAMES[6] = {
+  "Eye 1", "Eye 2", "Nose 1", "Nose 2", "Ear 1", "Ear 2"
+};
+
+Adafruit_seesaw rotary_encoders[6] = {
+  Adafruit_seesaw(&Wire1),
+  Adafruit_seesaw(&Wire1),
+  Adafruit_seesaw(&Wire1),
+  Adafruit_seesaw(&Wire1),
+  Adafruit_seesaw(&Wire1),
+  Adafruit_seesaw(&Wire1)
+};
+
+int32_t encoder_positions[] = { 0, 0, 0, 0, 0, 0 };
+
+void setupEncoders() {
+  for (int i = 0; i < 6; i++) {
+    Serial.print("Initializing ");
+    Serial.print(ENCODER_NAMES[i]);
+    Serial.print(" at address 0x");
+    Serial.println(ENCODER_ADDRESSES[i], HEX);
+
+    // Initialize the encoder with its specific address
+    if (!rotary_encoders[i].begin(ENCODER_ADDRESSES[i])) {
+      Serial.print("Error: Couldn't find encoder: ");
+      Serial.println(ENCODER_NAMES[i]);
+      while (1) delay(10);
+    }
+
+    // Check product firmware version
+    uint32_t version = ((rotary_encoders[i].getVersion() >> 16) & 0xFFFF);
+    if (version != 4991) {
+      Serial.print("Error: Wrong firmware loaded on ");
+      Serial.print(ENCODER_NAMES[i]);
+      Serial.print("? Version: ");
+      Serial.println(version);
+      while (1) delay(10);
+    }
+
+    // Configure the built-in switch (using standard seesaw SS_SWITCH pin)
+    rotary_encoders[i].pinMode(ROTARY_SWITCH_PIN, INPUT_PULLUP);
+
+    // Get starting position
+    encoder_positions[i] = rotary_encoders[i].getEncoderPosition();
+
+    // Enable interrupts for the encoder
+    rotary_encoders[i].setGPIOInterrupts((uint32_t)1 << ROTARY_SWITCH_PIN, 1);
+    rotary_encoders[i].enableEncoderInterrupt();
+  }
+
+  Serial.println("All encoders started successfully!\n");
+}
+
+void setupSliders() {
+}
+
+void setupButtons() {
+}
 
 void setup() {
   Serial.begin(115200);
@@ -32,71 +96,34 @@ void setup() {
   // Set ESP32 pins manually, as they are not on the default pins
   Wire1.setPins(I2C_SDA, I2C_SCL);
 
-  sspixel = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800, &Wire1);
-  ss = Adafruit_seesaw(&Wire1);
-
-  Serial.println("Looking for seesaw!");
-
-  if (!ss.begin(ROTARY_EYE1_ADDRESS) || !sspixel.begin(ROTARY_EYE1_ADDRESS)) {
-    Serial.println("Couldn't find seesaw on default address");
-    while (1) delay(10);
-  }
-  Serial.println("seesaw started");
-
-  uint32_t version = ((ss.getVersion() >> 16) & 0xFFFF);
-  if (version != 4991) {
-    Serial.print("Wrong firmware loaded? ");
-    Serial.println(version);
-    while (1) delay(10);
-  }
-  Serial.println("Found Product 4991");
-
-  // set not so bright!
-  sspixel.setBrightness(20);
-  sspixel.show();
-
-  // use a pin for the built in encoder switch
-  ss.pinMode(SS_SWITCH, INPUT_PULLUP);
-
-  // get starting position
-  encoder_position = ss.getEncoderPosition();
-
-  Serial.println("Turning on interrupts");
-  delay(10);
-  ss.setGPIOInterrupts((uint32_t)1 << SS_SWITCH, 1);
-  ss.enableEncoderInterrupt();
+  setupEncoders();
+  setupSliders();
+  setupButtons();
 }
 
 void loop() {
-  if (!ss.digitalRead(SS_SWITCH)) {
-    Serial.println("Button pressed!");
-  }
+  // Check all the encoders
+  for (int i = 0; i < 6; i++) {
+    // Read current position
+    int32_t new_position = rotary_encoders[i].getEncoderPosition();
 
-  int32_t new_position = ss.getEncoderPosition();
-  // did we move arounde?
-  if (encoder_position != new_position) {
-    Serial.println(new_position);  // display new position
+    // If position changed, print it out
+    if (new_position != encoder_positions[i]) {
+      Serial.print(ENCODER_NAMES[i]);
+      Serial.print(" position: ");
+      Serial.println(new_position);
+      encoder_positions[i] = new_position;
+    }
 
-    // change the neopixel color
-    sspixel.setPixelColor(0, Wheel(new_position & 0xFF));
-    sspixel.show();
-    encoder_position = new_position;  // and save for next round
+    // Check if the encoder button is pressed
+    // Note: The switch is active LOW (0 when pressed)
+    if (!rotary_encoders[i].digitalRead(ROTARY_SWITCH_PIN)) {
+      Serial.print(ENCODER_NAMES[i]);
+      Serial.println(" BUTTON PRESSED!");
+      delay(100);  // Simple debounce for testing
+    }
   }
 
   // don't overwhelm serial port
   delay(10);
-}
-
-
-uint32_t Wheel(byte WheelPos) {
-  WheelPos = 255 - WheelPos;
-  if (WheelPos < 85) {
-    return sspixel.Color(255 - WheelPos * 3, 0, WheelPos * 3);
-  }
-  if (WheelPos < 170) {
-    WheelPos -= 85;
-    return sspixel.Color(0, WheelPos * 3, 255 - WheelPos * 3);
-  }
-  WheelPos -= 170;
-  return sspixel.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }

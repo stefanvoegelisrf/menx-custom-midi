@@ -53,7 +53,7 @@ The issue was, that I had the setting `USB CDC On Boot` on `Disabled`. To receiv
 
 ### No seesaw chip found
 
-When using an ESP32, we can define the I2C pins freely and most likely, they will not be the standard I2C pins
+When using an ESP32, we can define the I2C pins freely and most likely, they will not be the standard I2C pins.
 
 ## Resources
 
