@@ -10,6 +10,7 @@ Below is a description of what is required to get the software of this project t
     - [Install ESP32 Boards](#install-esp32-boards)
     - [MIDI definition](#midi-definition)
       - [Data Value Mapping](#data-value-mapping)
+      - [MIDI assignment](#midi-assignment)
   - [Troubleshooting](#troubleshooting)
     - [No serial messages received](#no-serial-messages-received)
     - [No seesaw chip found](#no-seesaw-chip-found)
@@ -52,13 +53,13 @@ To do so, open the board manager and search for `esp32` and install the board co
 
 My layout enables me to do a MIDI mapping to two channels. Like this I can assign 3 rotary encoders, 1 slider and 4 keys to each channel.
 
-| MIDI Channel 1   | MIDI Channel 2    |
-| ---------------- | ----------------- |
-| Left Slider      | Right Slider      |
-| Left Eye Rotary  | Right Eye Rotary  |
-| Left Nose Rotary | Right Nose Rotary |
-| Left Ear Rotary  | Right Ear Rotary  |
-| Top 4 Keys       | Bottom 4 Keys     |
+| MIDI Channel 1           | MIDI Channel 2            |
+| ------------------------ | ------------------------- |
+| Left Slider              | Right Slider              |
+| Left Eye Rotary Encoder  | Right Eye Rotary Encoder  |
+| Left Nose Rotary Encoder | Right Nose Rotary Encoder |
+| Left Ear Rotary Encoder  | Right Ear Rotary Encoder  |
+| Top 4 Keys               | Bottom 4 Keys             |
 
 #### Data Value Mapping
 
@@ -71,6 +72,22 @@ The values that I receive from my components need to be mapped to MIDI values. T
 | Encoder Turn Left  | Control Change (CC) | CC Number               | 127            |
 | Encoder/Key Press  | Note On or CC       | Note/CC Number          | 127            |
 | Encoder/Key Lift   | Note Off or CC      | Note/CC Number          | 0              |
+
+#### MIDI assignment
+
+Each of the components has to send unique values, the table below outlines the assigned values. This is the same for both MIDI channels.
+
+| Component           | Control Change             | Note |
+| ------------------- | -------------------------- | ---- |
+| Slider              | 10                         |      |
+| Eye Rotary Encoder  | 20 (Rotation), 21 (Switch) | 36   |
+| Nose Rotary Encoder | 22 (Rotation), 23 (Switch) | 37   |
+| Ear Rotary Encoder  | 24 (Rotation), 25 (Switch) | 38   |
+| Key 1               | 26                         | 40   |
+| Key 2               | 27                         | 41   |
+| Key 3               | 28                         | 42   |
+| Key 4               | 29                         | 43   |
+
 
 ## Troubleshooting
 
