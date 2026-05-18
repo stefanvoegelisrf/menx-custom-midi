@@ -16,6 +16,7 @@ In this readme you can find the parts I used in the project, links to the projec
       - [Documentation](#documentation-3)
   - [Project setup](#project-setup)
   - [What is I2C](#what-is-i2c)
+    - [I2C and Arduino](#i2c-and-arduino)
   - [Resources](#resources)
 
 
@@ -116,10 +117,21 @@ I have split the project setup into two parts.
 
 ## What is I2C
 
+Inter-integrated circuit (I2C) is a protocol used to connect and transfer data between my main processor (ESP32) and my components (Rotary encoders, sliders and buttons) using simple wiring.
+
+Each component has a unique identification number assigned to it, so I can send or request data from the correct component.
+
+I2C uses two lines to connect the devices:
+- SDA (Serial Data): The actual data sent back and forth between processor and components
+- SCL (Serial Clock): The pulsing signal to keep the devices synchronized
+
+### I2C and Arduino
+
 
 
 ## Resources
 
-- [adafruit.com - Powering Neopixels](https://learn.adafruit.com/adafruit-neopixel-uberguide/powering-neopixels)
-- [adafruit.com - Adafruit STEMMA & STEMMA QT](https://learn.adafruit.com/introducing-adafruit-stemma-qt/what-is-stemma)
-- [adafruit.com - I2C address list](https://learn.adafruit.com/i2c-addresses/the-list)
+- [learn.adafruit.com - Powering Neopixels](https://learn.adafruit.com/adafruit-neopixel-uberguide/powering-neopixels)
+- [learn.adafruit.com - Adafruit STEMMA & STEMMA QT](https://learn.adafruit.com/introducing-adafruit-stemma-qt/what-is-stemma)
+- [learn.adafruit.com - I2C address list](https://learn.adafruit.com/i2c-addresses/the-list)
+- [docs.arduino.com - Inter-Integrated Circuit (I2C) Protocol](https://docs.arduino.cc/learn/communication/wire/)
