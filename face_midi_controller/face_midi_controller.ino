@@ -27,6 +27,8 @@
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
 
+const char* DEVICE_NAME = "STEF-Visuals";
+
 const uint8_t FIXED_TRIGGER_VELOCITY = 127;
 
 const uint8_t ENCODER_ADDRESSES[] = {
@@ -78,7 +80,9 @@ Adafruit_NeoKey_1x4 NeoKeyButtons[KEY_ROWS][KEY_COLUMNS / 4] = {
 
 Adafruit_MultiNeoKey1x4 NeoKeys((Adafruit_NeoKey_1x4*)NeoKeyButtons, KEY_ROWS, KEY_COLUMNS / 4);
 
-USBMIDI_Interface midi;
+USBMIDI_Interface MidiUsb;
+BluetoothMIDI_Interface MidiBle;
+BidirectionalMIDI_Pipe pipes;
 
 NeoKey1x4Callback buttonPressed(keyEvent e);
 
@@ -173,7 +177,7 @@ void checkEncoders() {
       // e.g. Rotary Encoder Eye 1 has i=0 -> i/2=0 -> 0*2=0, Rotary Encoder Eye 2 has i=1 -> i/2=0.5 -> C cuts off decimal -> 0*2=0
       MIDIAddress ccAddress = MIDIAddress(20 + (i / 2) * 2, midiChannel);
       int32_t difference = newPosition - EncoderPositions[i];
-      midi.sendCC(ccAddress, difference > 0 ? 1 : 127);
+      MidiUsb.sendCC(ccAddress, difference > 0 ? 1 : 127);
 
       EncoderPositions[i] = newPosition;
     }
@@ -188,11 +192,11 @@ void checkEncoders() {
       MIDIAddress noteAddress = MIDIAddress(36 + (i / 2), midiChannel);
 
       if (!currentSwitchState) {  // Pressed
-        midi.sendCC(ccSwitchAddress, FIXED_TRIGGER_VELOCITY);
-        midi.sendNoteOn(noteAddress, FIXED_TRIGGER_VELOCITY);
+        MidiUsb.sendCC(ccSwitchAddress, FIXED_TRIGGER_VELOCITY);
+        MidiUsb.sendNoteOn(noteAddress, FIXED_TRIGGER_VELOCITY);
       } else {
-        midi.sendCC(ccSwitchAddress, 0);
-        midi.sendNoteOff(noteAddress, 0);
+        MidiUsb.sendCC(ccSwitchAddress, 0);
+        MidiUsb.sendNoteOff(noteAddress, 0);
       }
       LastEncoderSwitchStates[i] = currentSwitchState;
     }
@@ -209,7 +213,7 @@ void checkSliders() {
       Channel midiChannel = (i == 0) ? Channel_1 : Channel_2;
       MIDIAddress ccAddress = MIDIAddress(10, midiChannel);
       uint8_t midiValue = map(sliderValue, 0, 1023, 0, 127);
-      midi.sendCC(ccAddress, midiValue);
+      MidiUsb.sendCC(ccAddress, midiValue);
       SliderValues[i] = sliderValue;
     }
   }
@@ -225,14 +229,17 @@ void setup() {
   setupSliders();
   setupEncoders();
   setupKeys();
-  midi.begin();
+  
+  MidiBle.setName(DEVICE_NAME);
+  MidiUsb | pipes | MidiBle;
+  MIDI_Interface::beginAll();
 }
 
 void loop() {
   checkEncoders();
   checkSliders();
   NeoKeys.read();
-  midi.update();
+  MIDI_Interface::updateAll();
   // don't overwhelm serial port
   delay(10);
 }
@@ -252,14 +259,14 @@ NeoKey1x4Callback buttonPressed(keyEvent e) {
   if (e.bit.EDGE == SEESAW_KEYPAD_EDGE_RISING) {
     Serial.print("Key press ");
     Serial.println(keyIndex);
-    midi.sendNoteOn(noteAddress, FIXED_TRIGGER_VELOCITY);
-    midi.sendCC(ccAddress, FIXED_TRIGGER_VELOCITY);
+    MidiUsb.sendNoteOn(noteAddress, FIXED_TRIGGER_VELOCITY);
+    MidiUsb.sendCC(ccAddress, FIXED_TRIGGER_VELOCITY);
 
   } else if (e.bit.EDGE == SEESAW_KEYPAD_EDGE_FALLING) {
     Serial.print("Key release ");
     Serial.println(keyIndex);
-    midi.sendNoteOff(noteAddress, 0);
-    midi.sendCC(ccAddress, 0);
+    MidiUsb.sendNoteOff(noteAddress, 0);
+    MidiUsb.sendCC(ccAddress, 0);
   }
 
   return 0;
