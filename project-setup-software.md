@@ -11,11 +11,12 @@ Below is a description of what is required to get the software of this project t
     - [MIDI definition](#midi-definition)
       - [Data Value Mapping](#data-value-mapping)
       - [MIDI assignment](#midi-assignment)
-  - [Troubleshooting](#troubleshooting)
+  - [Troubleshooting and helpful stuff I learned](#troubleshooting-and-helpful-stuff-i-learned)
     - [No serial messages received](#no-serial-messages-received)
     - [No seesaw chip found](#no-seesaw-chip-found)
     - [Testing MIDI](#testing-midi)
     - [Enable MIDI](#enable-midi)
+    - [Automating the build process and making it configurable](#automating-the-build-process-and-making-it-configurable)
   - [Resources](#resources)
 
 
@@ -93,7 +94,7 @@ Each of the components has to send unique values, the table below outlines the a
 | Key 4               | 29                         | 43   |
 
 
-## Troubleshooting
+## Troubleshooting and helpful stuff I learned
 
 I have run into some issues in this project and here is a list of issues that I ran into, so if I run into them again, I know what the issue is and how to solve it.
 
@@ -160,6 +161,10 @@ In order to connect a MIDI device via BLE, we need to use the `Audio MIDI Setup`
 Once we have MIDI Studio open, we can click on the Bluetooth icon to search for our device and connect to it.
 
 ![Screenshot showing how to connect to MIDI BLE device](./images/project-setup/midi-ble-connect.png)
+
+### Automating the build process and making it configurable
+
+https://platformio.org/
 
 ## Resources
 
