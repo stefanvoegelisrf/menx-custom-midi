@@ -14,7 +14,9 @@ In my project, the rotary encoders represent different parts of a face: eyes, no
 
 #### Print settings
 
+In order to get fine details of the controller, I have set the layer height to the lowest possible setting.
 
+In order to get good stability, I have set the infill density to a higher value.
 TODO: add print settings(layer height, dense infill, no supports)
 
 #### Eyes
@@ -165,3 +167,32 @@ The keys have four address jumpers, which can be left open (not soldered) or clo
 
 - L -> low -> open -> not soldered
 - H -> high -> closed -> soldered
+
+## Helpful things I learned
+
+### How much power does a NeoPixel use/require
+
+NeoPixels can draw up to 60 milliamps, meaning each pixel draws about 20 milliamps. If we want to display full bright white, the full 60 milliamps will be required as each pixel needs to be lit up the same amount. If we mix colors, the required milliamps will be lower. The rule of thumb of Adafruit is to calculate with 20 milliamps. For my 22 NeoPixels (Slider: 2x4 NeoPixel, Rotary Encoder: 6x1 NeoPixel, Keys: 2x4 NeoPixel), the amps calculation looks as follows:
+
+- Rule of thumb calculation: 22 NeoPixels x 20 mA / 1000 = 0.4 Amps minimum
+- Maximum calculation: 22 NeoPixels x 60 mA / 1000 = 1.32 Amps minimum
+
+As these are the minimum amp requirements, it is good to always leave some headroom. Keep in mind that the board, the components themselves and also onboard pixels also need power.
+
+### How much power does my board use/require
+
+### How to know, how much power is available by using the 3.3V pin
+
+The NeoPixels located on my Adafruit components are normally powered via 3.3V as this is the default connection for I2C cables. The board receives 5V which is then regulated down to 3.3V. This leads to the board providing a reduced amount of (milli) amps. As a NeoPixel can draw up to 60 milliamps, this can become critical when using a significant amount of NeoPixels. In my case, there are 22 NeoPixels in total. In order to find out, how much amps each NeoPixel can use, we can look at the voltage regulator that is present on a board. The information on the voltage regulator of the board can be found by looking at the schematics. For my project, I have looked at the following two boards:
+
+#### Waveshare ESP32-S3-DEV-KIT-N8R8
+
+> Product link: [docs.waveshare.com - ESP32-S3-DEV-KIT-N8R8](https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8)
+
+#### LilyGo T7 S3
+
+> Product Link: [lilygo.cc - T7 S3](https://lilygo.cc/en-us/products/t7-s3)
+
+## Resources
+
+- [learn.adafruit.com - Powering Neopixels](https://learn.adafruit.com/adafruit-neopixel-uberguide/powering-neopixels)

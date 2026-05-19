@@ -119,7 +119,6 @@ The components that I use are from Adafruit and they have 5 connectors:
 
 ## Resources
 
-- [learn.adafruit.com - Powering Neopixels](https://learn.adafruit.com/adafruit-neopixel-uberguide/powering-neopixels)
 - [learn.adafruit.com - Adafruit STEMMA & STEMMA QT](https://learn.adafruit.com/introducing-adafruit-stemma-qt/what-is-stemma)
 - [learn.adafruit.com - I2C address list](https://learn.adafruit.com/i2c-addresses/the-list)
 - [docs.arduino.com - Inter-Integrated Circuit (I2C) Protocol](https://docs.arduino.cc/learn/communication/wire/)
