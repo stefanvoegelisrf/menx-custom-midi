@@ -185,23 +185,13 @@ In order to know how much power my board uses or requires, I have to know which 
 
 > Chip details: [files.waveshare.com - ESP32-S3 Wroom-1](https://files.waveshare.com/wiki/common/Esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf)
 
-#### Power saving - disabling WIFI
+#### Power management - low power
 
-As I don't use WIFI, I can disable it to save power.
+There are several options available for saving power. The official documentation lies out several scenarios: [docs.espressif.com - Low Power Mode](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-guides/low-power-mode/index.html)
 
-TODO: add instruction how to do this
+#### Power management - enable sleep
 
-#### Power saving - reducing clock speed
-
-My chip probably does not need to run at full speed, so the clock speed could be reduced.
-
-TODO: check if this makes sense and how to do it
-
-#### Power saving - enable sleep
-
-My controller does not need to be powered on all the time, so we can put it into sleep after a certain amount of time.
-
-TODO: check how to do this in a good way
+My controller does not need to be powered on all the time, so I could put it into sleep after a certain amount of time. For now, I won't do this, but this would be possible by looking at the documentation here: [docs.espressif.com - Sleep Modes](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/system/sleep_modes.html)
 
 ### How to know, how much power is available by using the 3.3V pin
 
