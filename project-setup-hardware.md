@@ -174,12 +174,34 @@ The keys have four address jumpers, which can be left open (not soldered) or clo
 
 NeoPixels can draw up to 60 milliamps, meaning each pixel draws about 20 milliamps. If we want to display full bright white, the full 60 milliamps will be required as each pixel needs to be lit up the same amount. If we mix colors, the required milliamps will be lower. The rule of thumb of Adafruit is to calculate with 20 milliamps. For my 22 NeoPixels (Slider: 2x4 NeoPixel, Rotary Encoder: 6x1 NeoPixel, Keys: 2x4 NeoPixel), the amps calculation looks as follows:
 
-- Rule of thumb calculation: 22 NeoPixels x 20 mA / 1000 = 0.4 Amps minimum
-- Maximum calculation: 22 NeoPixels x 60 mA / 1000 = 1.32 Amps minimum
+- Rule of thumb calculation: 22 NeoPixels x 20 mA / 1000 = 0.4 amps minimum
+- Maximum calculation: 22 NeoPixels x 60 mA / 1000 = 1.32 amps minimum
 
 As these are the minimum amp requirements, it is good to always leave some headroom. Keep in mind that the board, the components themselves and also onboard pixels also need power.
 
 ### How much power does my board use/require
+
+In order to know how much power my board uses or requires, I have to know which chip that it uses. The boards that I have checked for my project (ESP32-S3-DEV-KIT-N8R8 and LilyGo T7 S3) both use the ESP32-S3-WROOM-1 chip. The current consumption for this chip varies depending on what features are used. The current consumption in active mode can vary from 95 to 355 milliamps.
+
+> Chip details: [files.waveshare.com - ESP32-S3 Wroom-1](https://files.waveshare.com/wiki/common/Esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf)
+
+#### Power saving - disabling WIFI
+
+As I don't use WIFI, I can disable it to save power.
+
+TODO: add instruction how to do this
+
+#### Power saving - reducing clock speed
+
+My chip probably does not need to run at full speed, so the clock speed could be reduced.
+
+TODO: check if this makes sense and how to do it
+
+#### Power saving - enable sleep
+
+My controller does not need to be powered on all the time, so we can put it into sleep after a certain amount of time.
+
+TODO: check how to do this in a good way
 
 ### How to know, how much power is available by using the 3.3V pin
 
@@ -189,9 +211,39 @@ The NeoPixels located on my Adafruit components are normally powered via 3.3V as
 
 > Product link: [docs.waveshare.com - ESP32-S3-DEV-KIT-N8R8](https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8)
 
+Schematic:
+
+![Schematic of Waveshare ESP32-S3-DEV-KIT-N8R8 board highlighting voltage regulator](./images/project-setup/ESP32-S3-DEV-KIT-N8R8-schematic-voltage-regulator.png)
+
+The voltage regulators mentioned for this board are `SGM2212` or `AMS1117`.
+
+#### AMS1117
+
+The AMS1117 provides an outpout current of 1 Amps.
+
+> Technical details for `AMS1117`: [advanced-monolithic.com - AMS1117](http://www.advanced-monolithic.com/pdf/ds1117.pdf)
+
+#### SGM2212
+
+The SGM2212 provides an output current of 800 milliamps.
+
+> Technical details for `SGM2212`: [sg-micro.com - SGM2212](https://www.sg-micro.com/product/SGM2212)
+
 #### LilyGo T7 S3
 
 > Product Link: [lilygo.cc - T7 S3](https://lilygo.cc/en-us/products/t7-s3)
+
+Schematic:
+
+![Schematic of LilyGo T7 S3 board highlighting voltage regulator](./images/project-setup/lilygo-t7-s3-schematic-voltage-regulator.png)
+
+The voltage regulator mentioned for this board is the `ME6211`.
+
+##### ME6211
+
+The ME6211 provides an output current of 500 milliamps.
+
+> Technical details for `ME6211`: [github.com - ME6211](https://github.com/Edragon/Datasheet/blob/master/Microne/ME6211.pdf)
 
 ## Resources
 
