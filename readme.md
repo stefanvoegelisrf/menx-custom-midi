@@ -1,10 +1,10 @@
-# Custom midi controller
+# Custom MIDI controller
 
-This repository contains the code for my custom midi controller. The goal of the project is to make a face-shaped midi controller that is using I2C components and an ESP32. Code is written using Arduino IDE.
+This repository contains the code for my custom MIDI controller. The goal of the project is to make a face-shaped MIDI controller that is using I2C components and an ESP32. Code is written using Arduino IDE.
 
 In this readme you can find the parts I used in the project, links to the project setup and helpful resources that I used in this project.
 
-- [Custom midi controller](#custom-midi-controller)
+- [Custom MIDI controller](#custom-midi-controller)
   - [Project setup](#project-setup)
   - [Parts used in this project](#parts-used-in-this-project)
     - [Microcontroller - Waveshare ESP32-S3](#microcontroller---waveshare-esp32-s3)
@@ -31,7 +31,7 @@ I have split the project setup into two parts.
 
 ## Parts used in this project
 
-This project makes use of components by Adafruit which are connected via I2C (STEMMAT QT / QWIIC) for controlling midi. The components are connected to an ESP32.
+This project makes use of components by Adafruit which are connected via I2C (STEMMAT QT / QWIIC) for controlling MIDI. The components are connected to an ESP32.
 
 ### Microcontroller - Waveshare ESP32-S3
 
@@ -39,7 +39,7 @@ This project makes use of components by Adafruit which are connected via I2C (ST
 
 > Product Link: [waveshare.com - ESP32-S3-DEV-KIT-NXRX](https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8)
 
-This ESP32 is used for receiving the signals from the components used, handles controlling the LEDs of the components and sends the midi signals over USB.
+This ESP32 is used for receiving the signals from the components used, handles controlling the LEDs of the components and sends the MIDI signals over USB.
 
 Number of components in this project: 1
 
